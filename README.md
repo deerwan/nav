@@ -66,6 +66,11 @@ npm run dev
 
 ## 🧩 浏览器扩展
 
+**商店下载**：
+- [Edge 扩展](https://microsoftedge.microsoft.com/addons/detail/hepnnmnggonihfpkgcpengcaghlmjpkl)
+- [Firefox 扩展](https://addons.mozilla.org/en-US/firefox/addon/%E4%B9%A6%E7%AD%BE%E7%AE%A1%E7%90%86%E5%8A%A9%E6%89%8B-bookmark-manager/)
+
+**手动安装**：
 在 [Releases](https://github.com/deerwan/nav/releases) 下载扩展：
 - Chrome/Edge/Brave: `bookmark-manager-chromium.zip`
 - Firefox: `bookmark-manager-firefox.zip`
