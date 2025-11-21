@@ -451,10 +451,6 @@ const handleKeydown = (event) => {
   top: 0.5rem;
   right: 0.5rem;
   z-index: 10;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  padding: 0.25rem;
-  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .selection-checkbox input[type="checkbox"] {

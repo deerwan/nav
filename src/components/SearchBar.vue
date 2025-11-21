@@ -105,7 +105,13 @@
             :title="engine.name"
             @click="searchWithEngine(engine.id)"
           >
-            <span class="engine-icon">{{ engine.icon }}</span>
+            <img 
+              v-if="engine.icon.startsWith('http')" 
+              :src="engine.icon" 
+              class="engine-icon-img" 
+              :alt="engine.name"
+            />
+            <span v-else class="engine-icon">{{ engine.icon }}</span>
             <span class="engine-name">{{ engine.name }}</span>
           </button>
         </div>
@@ -586,6 +592,13 @@ html.dark .search-engines {
   font-size: 1rem;
   display: flex;
   align-items: center;
+}
+
+.engine-icon-img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  border-radius: 2px;
 }
 
 .engine-name {

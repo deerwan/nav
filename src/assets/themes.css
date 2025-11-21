@@ -1,0 +1,259 @@
+/* Theme Styles */
+
+/* iOS 26 Style (Futuristic/Glassmorphism++) */
+html.style-ios26 {
+    --font-sans: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+    --radius: 24px;
+    --radius-sm: 14px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+    --radius-xl: 32px;
+
+    /* 更鲜艳的主色调 */
+    --primary: #007AFF;
+    --primary-dark: #0056b3;
+    --primary-light: #5ac8fa;
+
+    /* 极度通透 */
+    --backdrop-blur: 40px;
+    --primary-rgb: 0, 122, 255;
+}
+
+/* Header - 液态玻璃效果 */
+html.style-ios26 .app-header {
+    background: rgba(255, 255, 255, 0.1);
+    /* 极低透明度 */
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+html.style-ios26.dark .app-header {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Bookmark Card - 液态玻璃效果 */
+html.style-ios26 .bookmark-card {
+    background: rgba(255, 255, 255, 0.25);
+    /* 更通透 */
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+html.style-ios26 .bookmark-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+html.style-ios26.dark .bookmark-card {
+    background: rgba(30, 30, 30, 0.4);
+    /* 稍微加深背景以提高对比度 */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+html.style-ios26.dark .bookmark-card:hover {
+    background: rgba(40, 40, 40, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Dark Mode Text Visibility Improvements */
+html.style-ios26.dark .card-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+html.style-ios26.dark .card-url {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+html.style-ios26.dark .card-description {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+html.style-ios26.dark .category-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Category Buttons */
+html.style-ios26 .category-btn {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+html.style-ios26.dark .category-btn {
+    background: rgba(40, 40, 40, 0.3);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+html.style-ios26 .category-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* Search Bar */
+html.style-ios26 .search-bar {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+html.style-ios26.dark .search-bar {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.style-ios26.dark .search-bar input {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+html.style-ios26.dark .search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+html.style-ios26 .search-bar:focus-within {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: var(--primary);
+}
+
+html.style-ios26.dark .search-bar:focus-within {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* 通用覆盖 */
+html.style-ios26 .form-select,
+html.style-ios26 .form-input {
+    border-radius: var(--radius-sm);
+}
+
+html.style-ios26 .btn {
+    border-radius: var(--radius-sm);
+}
+
+/* Dialogs - 液态玻璃效果 */
+html.style-ios26 .dialog-box {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+html.style-ios26.dark .dialog-box {
+    background: rgba(30, 30, 30, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+html.style-ios26 .dialog-title {
+    color: var(--text);
+}
+
+html.style-ios26.dark .dialog-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+html.style-ios26.dark .dialog-message {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+html.style-ios26.dark .form-group label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+html.style-ios26.dark .form-hint {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Sidebar - 液态玻璃效果 */
+html.style-ios26 .category-sidebar {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+html.style-ios26.dark .category-sidebar {
+    background: rgba(20, 20, 20, 0.3);
+    border-right-color: rgba(255, 255, 255, 0.05);
+}
+
+html.style-ios26 .category-item.active {
+    background: rgba(var(--primary-rgb), 0.15);
+    backdrop-filter: blur(10px);
+}
+
+html.style-ios26.dark .category-item.active {
+    background: rgba(var(--primary-rgb), 0.25);
+}
+
+/* Toast Notifications - 悬浮玻璃卡片 */
+html.style-ios26 .toast {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--backdrop-blur)) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-md);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    /* Remove solid left border */
+}
+
+html.style-ios26.dark .toast {
+    background: rgba(30, 30, 30, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+html.style-ios26 .toast-title {
+    color: var(--text);
+}
+
+html.style-ios26.dark .toast-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+html.style-ios26.dark .toast-message {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Floating Buttons */
+html.style-ios26 .floating-btn {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(var(--backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--backdrop-blur));
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+html.style-ios26.dark .floating-btn {
+    background: rgba(40, 40, 40, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Footer */
+html.style-ios26 .app-footer {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(var(--backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--backdrop-blur));
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+html.style-ios26.dark .app-footer {
+    background: rgba(0, 0, 0, 0.2);
+    border-top-color: rgba(255, 255, 255, 0.05);
+}

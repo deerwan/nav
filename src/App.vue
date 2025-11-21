@@ -229,6 +229,7 @@
     <SettingsPage 
       ref="settingsPage"
       :theme-mode="themeMode"
+      :theme-style="themeStyle"
       :is-dark="isDark"
       :bookmarks="bookmarks"
       :show-search="showSearch"
@@ -243,6 +244,7 @@
       :empty-category-count="emptyCategoryCount"
       @action="handleSettingsAction"
       @set-theme-mode="setThemeMode"
+      @set-theme-style="setThemeStyle"
       @toggle-search="toggleSearch"
       @toggle-hide-empty="toggleHideEmptyCategories"
       @toggle-public-mode="togglePublicMode"
@@ -316,7 +318,7 @@ const {
   getEmptyCategories,
   cleanupEmptyCategories
 } = useBookmarks()
-const { themeMode, isDark, setThemeMode, toggleTheme, loadThemeFromDB } = useTheme()
+const { themeMode, themeStyle, isDark, setThemeMode, setThemeStyle, toggleTheme, loadThemeFromDB } = useTheme()
 const { showSearch, hideEmptyCategories, customTitle, footerContent, activeSettingsTab, publicMode, randomWallpaper, wallpaperApi, displayMode, toggleSearch, toggleHideEmptyCategories, togglePublicMode, updateCustomTitle, updateFooterContent, setActiveSettingsTab, toggleRandomWallpaper, updateWallpaperApi, setDisplayMode, applyWallpaper, loadSettingsFromDB } = useSettings()
 const { setToastInstance, success: toastSuccess, error: toastError } = useToast()
 const {

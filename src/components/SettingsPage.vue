@@ -76,6 +76,7 @@
               @editTitle="editTitle"
               @editFooter="editFooter"
               @setThemeMode="$emit('setThemeMode', $event)"
+              @setThemeStyle="$emit('setThemeStyle', $event)"
               @toggleSearch="$emit('toggleSearch')"
               @toggleHideEmpty="$emit('toggleHideEmpty')"
               @togglePublicMode="$emit('togglePublicMode')"
@@ -101,6 +102,10 @@ const props = defineProps({
   themeMode: {
     type: String,
     default: 'system'
+  },
+  themeStyle: {
+    type: String,
+    default: 'default'
   },
   isDark: {
     type: Boolean,
@@ -152,7 +157,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action', 'close', 'setThemeMode', 'toggleSearch', 'toggleHideEmpty', 'togglePublicMode', 'updateTitle', 'updateFooter', 'editTitle', 'editFooter', 'setActiveTab', 'toggleRandomWallpaper', 'updateWallpaperApi', 'setDisplayMode'])
+const emit = defineEmits(['action', 'close', 'setThemeMode', 'setThemeStyle', 'toggleSearch', 'toggleHideEmpty', 'togglePublicMode', 'updateTitle', 'updateFooter', 'editTitle', 'editFooter', 'setActiveTab', 'toggleRandomWallpaper', 'updateWallpaperApi', 'setDisplayMode'])
 
 const menuItems = ref([
   { id: 'appearance', name: '外观设置' },
@@ -180,6 +185,7 @@ const currentSettingsComponent = computed(() => {
 
 const componentProps = computed(() => ({
   themeMode: props.themeMode,
+  themeStyle: props.themeStyle,
   isDark: props.isDark,
   showSearch: props.showSearch,
   hideEmptyCategories: props.hideEmptyCategories,

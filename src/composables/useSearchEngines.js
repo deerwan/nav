@@ -5,54 +5,54 @@ const SEARCH_ENGINES = [
   {
     id: 'google',
     name: 'Google',
-    icon: '🔍',
+    icon: 'https://www.faviconextractor.com/favicon/www.google.com',
     url: 'https://www.google.com/search?q='
   },
   {
     id: 'bing',
     name: 'Bing',
-    icon: '🔎',
+    icon: 'https://www.faviconextractor.com/favicon/www.bing.com',
     url: 'https://www.bing.com/search?q='
   },
   {
     id: 'baidu',
     name: '百度',
-    icon: '🔎',
+    icon: 'https://www.faviconextractor.com/favicon/www.baidu.com',
     url: 'https://www.baidu.com/s?wd='
   },
   {
     id: 'duckduckgo',
     name: 'DuckDuckGo',
-    icon: '🦆',
+    icon: 'https://www.faviconextractor.com/favicon/duckduckgo.com',
     url: 'https://duckduckgo.com/?q='
   },
   {
     id: 'github',
     name: 'GitHub',
-    icon: '🐙',
+    icon: 'https://www.faviconextractor.com/favicon/github.com',
     url: 'https://github.com/search?q='
   },
   {
     id: 'stackoverflow',
     name: 'Stack Overflow',
-    icon: '📚',
+    icon: 'https://www.faviconextractor.com/favicon/stackoverflow.com',
     url: 'https://stackoverflow.com/search?q='
   },
   {
     id: 'wikipedia',
     name: 'Wikipedia',
-    icon: '📖',
+    icon: 'https://www.faviconextractor.com/favicon/en.wikipedia.org',
     url: 'https://en.wikipedia.org/w/index.php?search='
   },
   {
     id: 'npm',
     name: 'NPM',
-    icon: '📦',
+    icon: 'https://www.faviconextractor.com/favicon/www.npmjs.com',
     url: 'https://www.npmjs.com/search?q='
   }
 ]
 
-const enabledEngines = ref(localStorage.getItem('enabledSearchEngines') 
+const enabledEngines = ref(localStorage.getItem('enabledSearchEngines')
   ? JSON.parse(localStorage.getItem('enabledSearchEngines'))
   : SEARCH_ENGINES.slice(0, 4).map(e => e.id))
 
@@ -70,7 +70,7 @@ export function useSearchEngines() {
   const getEngineUrl = (engineId, query) => {
     const engine = SEARCH_ENGINES.find(e => e.id === engineId)
     if (!engine) return null
-    
+
     return engine.url + encodeURIComponent(query)
   }
 
@@ -88,15 +88,15 @@ export function useSearchEngines() {
     } else {
       enabledEngines.value.push(engineId)
     }
-    
+
     localStorage.setItem('enabledSearchEngines', JSON.stringify(enabledEngines.value))
-    
+
     if (isAuthenticated.value) {
       try {
         await apiRequest('/api/settings', {
           method: 'POST',
-          body: JSON.stringify({ 
-            settings: { enabledSearchEngines: JSON.stringify(enabledEngines.value) } 
+          body: JSON.stringify({
+            settings: { enabledSearchEngines: JSON.stringify(enabledEngines.value) }
           })
         })
       } catch (error) {
@@ -110,13 +110,13 @@ export function useSearchEngines() {
   const toggleSearchEnginesPanel = async () => {
     enabledSearchEnginesPanel.value = !enabledSearchEnginesPanel.value
     localStorage.setItem('enabledSearchEnginesPanel', String(enabledSearchEnginesPanel.value))
-    
+
     if (isAuthenticated.value) {
       try {
         await apiRequest('/api/settings', {
           method: 'POST',
-          body: JSON.stringify({ 
-            settings: { enabledSearchEnginesPanel: String(enabledSearchEnginesPanel.value) } 
+          body: JSON.stringify({
+            settings: { enabledSearchEnginesPanel: String(enabledSearchEnginesPanel.value) }
           })
         })
       } catch (error) {
@@ -133,7 +133,7 @@ export function useSearchEngines() {
       const response = await fetch('/api/settings', {
         headers: isAuthenticated.value ? getAuthHeaders() : {}
       })
-      
+
       if (response.ok) {
         const data = await response.json()
         if (data.success && data.data) {
@@ -159,8 +159,8 @@ export function useSearchEngines() {
       try {
         await apiRequest('/api/settings', {
           method: 'POST',
-          body: JSON.stringify({ 
-            settings: { enabledSearchEngines: JSON.stringify(newValue) } 
+          body: JSON.stringify({
+            settings: { enabledSearchEngines: JSON.stringify(newValue) }
           })
         })
       } catch (error) {

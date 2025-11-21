@@ -53,6 +53,24 @@
         }}
       </div>
     </div>
+
+    <!-- 主题风格 -->
+    <div class="form-group">
+      <label class="form-label">主题风格</label>
+      <div class="form-row">
+        <select 
+          class="form-select"
+          :value="themeStyle"
+          @change="$emit('setThemeStyle', $event.target.value)"
+        >
+          <option value="default">✨ 默认风格</option>
+          <option value="ios26">🚀 iOS 26 风格</option>
+        </select>
+      </div>
+      <div class="form-hint">
+        选择不同的界面视觉风格
+      </div>
+    </div>
     
     <!-- 显示模式 -->
     <div class="form-group">
@@ -125,7 +143,13 @@
             @change="toggleEngine(engine.id)"
           />
           <span class="engine-label">
-            <span class="engine-icon">{{ engine.icon }}</span>
+            <img 
+              v-if="engine.icon.startsWith('http')" 
+              :src="engine.icon" 
+              class="engine-icon-img" 
+              :alt="engine.name"
+            />
+            <span v-else class="engine-icon">{{ engine.icon }}</span>
             {{ engine.name }}
           </span>
         </label>
@@ -260,6 +284,10 @@ import { useSearchEngines } from '../../composables/useSearchEngines'
 
 const props = defineProps({
   themeMode: String,
+  themeStyle: {
+    type: String,
+    default: 'default'
+  },
   isDark: Boolean,
   showSearch: Boolean,
   hideEmptyCategories: Boolean,
@@ -275,6 +303,7 @@ const emit = defineEmits([
   'editTitle', 
   'editFooter', 
   'setThemeMode', 
+  'setThemeStyle',
   'toggleSearch', 
   'toggleHideEmpty', 
   'togglePublicMode',
@@ -741,5 +770,12 @@ html.dark .api-dialog {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.engine-icon-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  border-radius: 2px;
 }
 </style>
