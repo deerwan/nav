@@ -82,7 +82,7 @@ npm run dev
 - 📺 [视频教程](https://www.bilibili.com/video/BV1zR2MB6EnW/)
 - 📦 [GitHub 仓库](https://github.com/deerwan/nav)
 
-## 💰 赞助
+## 💰 请喝咖啡
 
 如果这个项目对你有帮助，欢迎赞助支持！
 
@@ -102,6 +102,8 @@ npm run dev
     </td>
   </tr>
 </table>
+
+☕ [查看咖啡列表](https://lllh.de/sponsor/) - 感谢所有支持者！
 
 ## 📝 许可证
 

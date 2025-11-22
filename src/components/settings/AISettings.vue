@@ -1,7 +1,7 @@
 <template>
   <div class="settings-section">
     <h2 class="section-title">AI 助手</h2>
-    <p class="section-description">配置 OpenAI 兼容 API，启用 AI 功能来智能生成书签描述、推荐分类等</p>
+    <p class="section-description">配置 AI 服务，启用智能生成书签描述、推荐分类等功能</p>
 
     <div class="settings-group">
       <div class="setting-item">
@@ -31,7 +31,6 @@
         <div class="setting-item">
           <div class="setting-header">
             <label class="setting-label" for="ai-api-key">API Key</label>
-            <span class="setting-hint">OpenAI API Key 或兼容服务的密钥</span>
           </div>
           <div class="api-key-input-wrapper">
             <input
@@ -93,7 +92,6 @@
             此参数已通过环境变量 <code>OPENAI_BASE_URL</code> 配置，无法在界面修改
           </p>
           <p v-else class="setting-note">
-            支持 OpenAI 兼容服务（如 Azure OpenAI、Claude、Gemini 等）<br>
             环境变量：<code>OPENAI_BASE_URL</code>
           </p>
         </div>
@@ -119,7 +117,6 @@
             此参数已通过环境变量 <code>OPENAI_MODEL</code> 配置，无法在界面修改
           </p>
           <p v-else class="setting-note">
-            推荐：gpt-4o-mini、gpt-3.5-turbo、gpt-4o<br>
             环境变量：<code>OPENAI_MODEL</code>
           </p>
         </div>
@@ -145,7 +142,7 @@
             <div class="setting-item">
               <div class="setting-header">
                 <label class="setting-label" for="ai-auth-header">认证 Header 名称</label>
-                <span class="setting-hint">某些代理服务可能需要自定义</span>
+                <span class="setting-hint">默认为 Authorization</span>
               </div>
               <input
                 id="ai-auth-header"
@@ -188,7 +185,7 @@
                 此参数已通过环境变量 <code>OPENAI_AUTH_PREFIX</code> 配置，无法在界面修改
               </p>
               <p v-else class="setting-note">
-                留空表示不添加前缀（某些服务直接传 API Key）<br>
+                默认为 "Bearer "，留空表示不添加前缀<br>
                 环境变量：<code>OPENAI_AUTH_PREFIX</code>
               </p>
             </div>
@@ -300,23 +297,11 @@
         <li>
           <strong>批量生成：</strong>支持为多个书签批量生成描述，提升效率
         </li>
-        <li>
-          <strong>通用 API 代理：</strong>通过 <code>/api/ai/proxy</code> 端点，可以调用所有 OpenAI 兼容 API
-        </li>
+
       </ul>
     </div>
 
-    <div class="compatibility-info">
-      <h4>兼容性说明</h4>
-      <p>支持所有兼容 OpenAI Chat Completions API 格式的服务，包括但不限于：</p>
-      <ul class="compatible-services">
-        <li>OpenAI（官方）</li>
-        <li>Azure OpenAI</li>
-        <li>Claude (via API)</li>
-        <li>Google Gemini</li>
-        <li>各类代理服务和中转 API</li>
-      </ul>
-    </div>
+
   </div>
 </template>
 
