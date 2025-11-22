@@ -229,7 +229,7 @@ import { useBookmarks } from '../composables/useBookmarks'
 import { useToast } from '../composables/useToast'
 import { buildCategoryTree, getCategoryPath } from '../utils/categoryTree'
 
-const { batchClassify } = useAI()
+const { batchClassify, suggestCategory } = useAI()
 const { updateBookmark, categories, bookmarks } = useBookmarks()
 const { success: toastSuccess, error: toastError } = useToast()
 
@@ -334,55 +334,72 @@ const startClassification = async () => {
   failedCount.value = 0
   results.value = []
   
-  // 准备书签数据
-  const bookmarksData = selectedBookmarks.value.map(b => ({
-    id: b.id,
-    name: b.name,
-    url: b.url,
-    description: b.description || ''
-  }))
-  
-  // 调用批量分类 API
-  const result = await batchClassify(bookmarksData, categoriesForAI)
-  
-  if (!result.success) {
-    toastError(result.error || '批量分类失败')
-    isClassifying.value = false
-    return
-  }
-  
-  // 处理结果
-  results.value = result.results.map(r => {
-    const bookmark = selectedBookmarks.value.find(b => b.id === r.id)
-    return {
-      ...r,
-      name: bookmark?.name || '',
-      url: bookmark?.url || ''
-    }
-  })
-  
-  successCount.value = result.successCount
-  failedCount.value = result.failedCount
-  
-  // 如果自动应用，直接更新书签
-  if (autoApply.value) {
-    for (const resultItem of results.value) {
-      if (resultItem.success) {
-        const bookmark = selectedBookmarks.value.find(b => b.id === resultItem.id)
-        if (bookmark) {
+  // 逐个处理书签，实时更新进度
+  for (let i = 0; i < selectedBookmarks.value.length; i++) {
+    const bookmark = selectedBookmarks.value[i]
+    currentBookmark.value = bookmark
+    currentIndex.value = i + 1
+    
+    try {
+      // 调用单个分类 API
+      const result = await suggestCategory(
+        bookmark.name,
+        bookmark.url,
+        bookmark.description || '',
+        categoriesForAI
+      )
+      
+      if (result.success) {
+        successCount.value++
+        results.value.push({
+          id: bookmark.id,
+          name: bookmark.name,
+          url: bookmark.url,
+          success: true,
+          categoryId: result.categoryId,
+          reason: result.reason
+        })
+        
+        // 如果自动应用，立即更新书签
+        if (autoApply.value) {
           try {
             await updateBookmark(bookmark.id, {
               ...bookmark,
-              category_id: resultItem.categoryId
+              category_id: result.categoryId
             })
           } catch (error) {
             console.error('Failed to update bookmark:', error)
           }
         }
+      } else {
+        failedCount.value++
+        results.value.push({
+          id: bookmark.id,
+          name: bookmark.name,
+          url: bookmark.url,
+          success: false,
+          error: result.error || '分类失败'
+        })
       }
+    } catch (error) {
+      failedCount.value++
+      results.value.push({
+        id: bookmark.id,
+        name: bookmark.name,
+        url: bookmark.url,
+        success: false,
+        error: '网络错误'
+      })
     }
-  } else {
-    // 默认选中所有成功的推荐
+    
+    // 添加小延迟，避免请求过快
+    if (i < selectedBookmarks.value.length - 1) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+  }
+  
+  // 如果不是自动应用，默认选中所有成功的推荐
+  if (!autoApply.value) {
     selectedRecommendations.value = new Set(
       results.value.filter(r => r.success).map(r => r.id)
     )
