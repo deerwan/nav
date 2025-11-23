@@ -38,6 +38,26 @@
       </div>
     </div>
     
+    <div v-if="category.children && category.children.length > 0" class="subcategories-grid">
+      <div 
+        v-for="sub in category.children" 
+        :key="sub.id"
+        class="folder-card"
+        :class="{ 'efficient-mode': displayMode === 'efficient' }"
+        @click="$emit('select-category', sub.id)"
+      >
+        <div class="folder-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill-opacity="0.2"/>
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" fill="none"/>
+          </svg>
+        </div>
+        <div class="folder-info">
+          <div class="folder-name">{{ sub.name }}</div>
+        </div>
+      </div>
+    </div>
+
     <div 
       ref="gridRef"
       class="bookmarks-grid"
@@ -134,6 +154,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
+  'select-category',
   'edit-category',
   'delete-category',
   'edit-bookmark',
@@ -630,5 +651,64 @@ html.dark .category-title .private-badge {
   opacity: 0.4;
   transform: scale(0.95);
   z-index: 1000;
+}
+
+/* Subcategories Grid Styles */
+.subcategories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.folder-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.folder-card:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.folder-card.efficient-mode {
+  padding: 0.5rem 0.75rem;
+  gap: 0.5rem;
+}
+
+.folder-icon {
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.folder-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+}
+
+.folder-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.folder-name {
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

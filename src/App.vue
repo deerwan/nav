@@ -165,6 +165,39 @@
         
         <!-- Bookmarks Content -->
         <div class="bookmarks-area" :class="{ 'efficient-mode': displayMode === 'efficient' }">
+          <!-- Breadcrumbs -->
+          <div 
+            v-if="selectedCategoryId !== ALL_CATEGORIES_ID && !searchQuery" 
+            class="breadcrumbs-container"
+            :class="{ 'efficient-mode': displayMode === 'efficient' }"
+          >
+            <button 
+              class="breadcrumb-item root-item"
+              @click="handleSelectCategory(ALL_CATEGORIES_ID)"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="home-icon">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              首页
+            </button>
+            
+            <template v-for="(item, index) in currentCategoryPath" :key="item.id">
+              <span class="breadcrumb-separator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </span>
+              <button 
+                class="breadcrumb-item"
+                :class="{ active: index === currentCategoryPath.length - 1 }"
+                @click="handleSelectCategory(item.id)"
+              >
+                {{ item.name }}
+              </button>
+            </template>
+          </div>
+
           <template v-if="displayedCategories.length > 0">
             <CategorySection
               v-for="category in displayedCategories"
@@ -176,6 +209,7 @@
               :selected-ids="selectedIds"
               :selected-category-ids="selectedCategoryIds"
               :display-mode="displayMode"
+              @select-category="handleSelectCategory"
               @edit-category="handleEditCategory"
               @delete-category="handleDeleteCategory"
               @edit-bookmark="handleEditBookmark"
@@ -399,9 +433,29 @@ const totalBookmarkCount = computed(() => {
   }, 0)
 })
 
+const categoryTreeData = computed(() => buildCategoryTree(categories.value))
+
+const currentCategoryPath = computed(() => {
+  if (selectedCategoryId.value === ALL_CATEGORIES_ID || !categoryTreeData.value.map) return []
+  return getCategoryPath(selectedCategoryId.value, categoryTreeData.value.map)
+})
+
 const displayedCategories = computed(() => {
-  if (!hideEmptyCategories.value) return categories.value
-  return categories.value.filter(cat => (bookmarksByCategory.value[cat.id]?.length || 0) > 0)
+  // 搜索模式下，保持原有逻辑（显示所有包含匹配书签的分类）
+  if (searchQuery.value) {
+    if (!hideEmptyCategories.value) return categories.value
+    return categories.value.filter(cat => (bookmarksByCategory.value[cat.id]?.length || 0) > 0)
+  }
+
+  // 文件夹模式逻辑
+  if (selectedCategoryId.value === ALL_CATEGORIES_ID) {
+    // 显示所有根分类
+    return categoryTreeData.value.tree
+  } else {
+    // 显示当前选中的分类
+    const current = categoryTreeData.value.map[selectedCategoryId.value]
+    return current ? [current] : []
+  }
 })
 
 watch(categories, (newCategories) => {
@@ -413,10 +467,6 @@ watch(categories, (newCategories) => {
   if (selectedCategoryId.value !== ALL_CATEGORIES_ID && !newCategories.some(category => category.id === selectedCategoryId.value)) {
     selectedCategoryId.value = ALL_CATEGORIES_ID
   }
-
-  nextTick(() => {
-    updateActiveCategoryFromScroll()
-  })
 }, { immediate: true })
 
 watch([showSearch, isEditMode, isBatchMode, isAuthenticated], () => {
@@ -459,23 +509,27 @@ const scrollToCategory = (categoryId) => {
   window.scrollTo({ top: targetTop, behavior: 'smooth' })
 }
 
+// 文件夹模式下，滚动监听的逻辑需要调整（或者暂时禁用自动选中，因为现在是点击驱动的）
+// 但为了保持兼容性，我们只在"全部"视图下启用滚动监听
 function updateActiveCategoryFromScroll() {
   if (typeof window === 'undefined') return
   if (isScrollingProgrammatically.value) return
   if (!categories.value.length) return
+  
+  // 如果不是在"全部"视图，不进行滚动监听更新
+  if (selectedCategoryId.value !== ALL_CATEGORIES_ID) return
 
   const scrollY = window.scrollY || document.documentElement.scrollTop || 0
   if (scrollY <= 80) {
-    if (selectedCategoryId.value !== ALL_CATEGORIES_ID) {
-      selectedCategoryId.value = ALL_CATEGORIES_ID
-    }
+    // 在顶部时保持"all"
     return
   }
 
   const offset = getScrollOffset()
   let activeId = null
 
-  for (const category of categories.value) {
+  // 只检测当前展示的分类（根分类）
+  for (const category of displayedCategories.value) {
     const element = document.getElementById(`category-${category.id}`)
     if (!element) continue
     const rect = element.getBoundingClientRect()
@@ -489,25 +543,18 @@ function updateActiveCategoryFromScroll() {
       break
     }
   }
-
-  if (activeId === null && categories.value.length) {
-    activeId = categories.value[categories.value.length - 1].id
-  }
-
-  if (activeId !== null && selectedCategoryId.value !== activeId) {
-    selectedCategoryId.value = activeId
-  }
+  
+  // 注意：在文件夹模式下，我们不希望滚动自动改变 selectedCategoryId，
+  // 因为这会触发视图切换（从"全部"变成"单分类"）。
+  // 所以这里我们可能需要一个新的状态来表示"当前视口中的分类"，而不是直接修改 selectedCategoryId。
+  // 或者，我们完全禁用滚动更新 selectedCategoryId 的逻辑，只保留点击导航。
+  // 鉴于文件夹模式的特性，禁用滚动自动选中是更合理的。
 }
 
 const handleSelectCategory = (categoryId) => {
   selectedCategoryId.value = categoryId
   sidebarOpen.value = false
-
-  if (categoryId === ALL_CATEGORIES_ID) {
-    scrollToTop()
-  } else {
-    setTimeout(() => scrollToCategory(categoryId), 100)
-  }
+  scrollToTop()
 }
 
 const handleScrollToBookmark = (bookmark) => {
@@ -1088,3 +1135,71 @@ const handleReorderCategory = async ({ id, direction }) => {
 }
 </script>
 
+
+<style>
+/* Breadcrumbs Styles */
+.breadcrumbs-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.breadcrumbs-container.efficient-mode {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+  background: var(--bg-tertiary);
+  color: var(--text);
+}
+
+.breadcrumb-item.active {
+  color: var(--primary);
+  font-weight: 600;
+  background: rgba(99, 102, 241, 0.1);
+  cursor: default;
+}
+
+.breadcrumb-item.root-item {
+  padding-left: 0.4rem;
+}
+
+.home-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.breadcrumb-separator {
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+}
+
+.breadcrumb-separator svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+</style>
