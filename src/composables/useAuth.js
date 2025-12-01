@@ -1,25 +1,28 @@
 import { ref, computed, watch } from 'vue'
 
 const token = ref(localStorage.getItem('authToken') || '')
+const username = ref(localStorage.getItem('authUsername') || '')
 const isAuthenticated = computed(() => !!token.value)
 const authCallbacks = []
 
 export function useAuth() {
-  const login = async (username, password, rememberMe = false) => {
+  const login = async (loginUsername, password, rememberMe = false) => {
     try {
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, password, rememberMe })
+        body: JSON.stringify({ username: loginUsername, password, rememberMe })
       })
       
       const data = await response.json()
       
       if (data.success) {
         token.value = data.token
+        username.value = data.username || loginUsername
         localStorage.setItem('authToken', data.token)
+        localStorage.setItem('authUsername', username.value)
         return { success: true }
       } else {
         return { success: false, error: data.error || '登录失败' }
@@ -31,7 +34,9 @@ export function useAuth() {
   
   const logout = () => {
     token.value = ''
+    username.value = ''
     localStorage.removeItem('authToken')
+    localStorage.removeItem('authUsername')
   }
   
   const getAuthHeaders = () => {
@@ -91,6 +96,7 @@ export function useAuth() {
   
   return {
     token,
+    username,
     isAuthenticated,
     login,
     logout,

@@ -19,42 +19,27 @@
 
          <!-- 右上角：操作按钮 -->
          <div class="header-right">
-          
+
           <!-- 未登录状态：显示登录按钮 -->
-          <button 
+          <button
             v-if="!isAuthenticated"
             class="btn btn-primary"
             @click="loginModal.open()"
           >
             登录
           </button>
-          
-          <!-- 已登录状态：直接显示操作按钮，不需要汉堡菜单 -->
-          <template v-else>
-            <button 
-              class="header-text-btn"
-              @click="settingsPage.open()"
-            >
-              设置
-            </button>
-            
-            <!-- 仅在非编辑模式下显示"编辑"按钮；编辑模式使用外显"完成"按钮 -->
-            <button 
-              v-if="!isEditMode"
-              class="header-text-btn"
-              @click="isEditMode = true"
-            >
-              编辑
-            </button>
-            
-            <button 
-              class="header-text-btn"
-              @click="handleLogout()"
-            >
-              退出
-            </button>
-          </template>
-        </div>
+
+          <!-- 已登录状态：显示头像菜单 -->
+          <AvatarMenu
+           v-else
+           :avatar-url="avatarUrl"
+           :username="authUsername"
+           :is-edit-mode="isEditMode"
+           @settings="settingsPage.open()"
+           @edit="isEditMode = true"
+           @logout="handleLogout()"
+          />
+         </div>
       </div>
       
       <div v-if="showSearch" class="header-search">
@@ -273,6 +258,8 @@
       :hide-empty-categories="hideEmptyCategories"
       :public-mode="publicMode"
       :custom-title="customTitle"
+      :avatar-url="avatarUrl"
+      :username="authUsername"
       :footer-content="footerContent"
       :active-settings-tab="activeSettingsTab"
       :empty-category-count="emptyCategoryCount"
@@ -289,6 +276,7 @@
       @update-footer="updateFooterContent"
       @editTitle="handleEditTitle"
       @editFooter="handleEditFooter"
+      @uploadAvatar="handleUploadAvatar"
       @setActiveTab="handleSettingsTabChange"
     />
     
@@ -329,9 +317,10 @@ import BatchAIClassifyDialog from './components/BatchAIClassifyDialog.vue'
 import BackupDialog from './components/BackupDialog.vue'
 import UpdateNotification from './components/UpdateNotification.vue'
 import ToastNotification from './components/ToastNotification.vue'
+import AvatarMenu from './components/AvatarMenu.vue'
 import { useAI } from './composables/useAI'
 
-const { isAuthenticated, logout, onAuthChange } = useAuth()
+const { isAuthenticated, username: authUsername, logout, onAuthChange } = useAuth()
 const { aiEnabled, checkAIAvailability } = useAI()
 const { loadSettingsFromDB: loadSearchEnginesSettings } = useSearchEngines()
 const {
@@ -353,7 +342,7 @@ const {
   cleanupEmptyCategories
 } = useBookmarks()
 const { themeMode, themeStyle, isDark, setThemeMode, setThemeStyle, toggleTheme, loadThemeFromDB } = useTheme()
-const { showSearch, hideEmptyCategories, customTitle, footerContent, activeSettingsTab, publicMode, randomWallpaper, wallpaperApi, displayMode, toggleSearch, toggleHideEmptyCategories, togglePublicMode, updateCustomTitle, updateFooterContent, setActiveSettingsTab, toggleRandomWallpaper, updateWallpaperApi, setDisplayMode, applyWallpaper, loadSettingsFromDB } = useSettings()
+const { showSearch, hideEmptyCategories, customTitle, footerContent, activeSettingsTab, publicMode, randomWallpaper, wallpaperApi, displayMode, avatarUrl, toggleSearch, toggleHideEmptyCategories, togglePublicMode, updateCustomTitle, updateFooterContent, setActiveSettingsTab, toggleRandomWallpaper, updateWallpaperApi, setDisplayMode, updateAvatarUrl, applyWallpaper, loadSettingsFromDB } = useSettings()
 const { setToastInstance, success: toastSuccess, error: toastError } = useToast()
 const {
   isBatchMode,
@@ -700,6 +689,16 @@ const handleLogout = async () => {
     logout()
     isEditMode.value = false
     await fetchData()
+  }
+}
+
+const handleUploadAvatar = async (base64Image) => {
+  try {
+    await updateAvatarUrl(base64Image)
+    toastSuccess('头像已更新')
+  } catch (error) {
+    toastError('上传头像失败')
+    console.error('Failed to upload avatar:', error)
   }
 }
 

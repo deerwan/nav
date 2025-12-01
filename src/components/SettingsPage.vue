@@ -75,6 +75,7 @@
               @action="handleAction"
               @editTitle="editTitle"
               @editFooter="editFooter"
+              @uploadAvatar="$emit('uploadAvatar', $event)"
               @setThemeMode="$emit('setThemeMode', $event)"
               @setThemeStyle="$emit('setThemeStyle', $event)"
               @toggleSearch="$emit('toggleSearch')"
@@ -131,6 +132,14 @@ const props = defineProps({
     type: String,
     default: '📚 书签管理'
   },
+  avatarUrl: {
+    type: String,
+    default: ''
+  },
+  username: {
+    type: String,
+    default: '用户'
+  },
   footerContent: {
     type: String,
     default: '<p>Made with ❤️ using <a href="https://github.com/deerwan/nav" target="_blank">Vue 3 and Cloudflare</a></p>'
@@ -157,7 +166,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['action', 'close', 'setThemeMode', 'setThemeStyle', 'toggleSearch', 'toggleHideEmpty', 'togglePublicMode', 'updateTitle', 'updateFooter', 'editTitle', 'editFooter', 'setActiveTab', 'toggleRandomWallpaper', 'updateWallpaperApi', 'setDisplayMode'])
+const emit = defineEmits(['action', 'close', 'setThemeMode', 'setThemeStyle', 'toggleSearch', 'toggleHideEmpty', 'togglePublicMode', 'updateTitle', 'updateFooter', 'editTitle', 'editFooter', 'setActiveTab', 'toggleRandomWallpaper', 'updateWallpaperApi', 'setDisplayMode', 'uploadAvatar'])
 
 const menuItems = ref([
   { id: 'appearance', name: '外观设置' },
@@ -191,6 +200,8 @@ const componentProps = computed(() => ({
   hideEmptyCategories: props.hideEmptyCategories,
   publicMode: props.publicMode,
   customTitle: props.customTitle,
+  avatarUrl: props.avatarUrl,
+  username: props.username,
   randomWallpaper: props.randomWallpaper,
   wallpaperApi: props.wallpaperApi,
   displayMode: props.displayMode,

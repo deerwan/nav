@@ -10,6 +10,7 @@ const publicMode = ref(localStorage.getItem('publicMode') !== 'false')
 const randomWallpaper = ref(localStorage.getItem('randomWallpaper') === 'true')
 const wallpaperApi = ref(localStorage.getItem('wallpaperApi') || '')
 const displayMode = ref(localStorage.getItem('displayMode') || 'standard')
+const avatarUrl = ref(localStorage.getItem('avatarUrl') || '')
 
 // 加载标志位，避免循环触发
 const isLoadingFromDB = ref(false)
@@ -64,6 +65,10 @@ export function useSettings() {
           if (data.data.displayMode) {
             displayMode.value = data.data.displayMode
             localStorage.setItem('displayMode', data.data.displayMode)
+          }
+          if (data.data.avatarUrl !== undefined) {
+            avatarUrl.value = data.data.avatarUrl || ''
+            localStorage.setItem('avatarUrl', data.data.avatarUrl || '')
           }
         }
       }
@@ -175,6 +180,13 @@ export function useSettings() {
     localStorage.setItem('displayMode', mode)
     
     await saveSettingsToDB({ displayMode: mode })
+  }
+  
+  const updateAvatarUrl = async (url) => {
+    avatarUrl.value = url || ''
+    localStorage.setItem('avatarUrl', avatarUrl.value)
+    
+    await saveSettingsToDB({ avatarUrl: avatarUrl.value })
   }
   
   // 应用随机壁纸
@@ -383,6 +395,24 @@ export function useSettings() {
     }
   })
   
+  watch(avatarUrl, async (newValue) => {
+    if (!isLoadingFromDB.value) {
+      localStorage.setItem('avatarUrl', newValue)
+      if (isAuthenticated.value) {
+        try {
+          await apiRequest('/api/settings', {
+            method: 'POST',
+            body: JSON.stringify({ settings: { avatarUrl: newValue } })
+          })
+        } catch (error) {
+          if (error.message === 'Token expired') {
+            console.warn('Token expired, avatarUrl not saved to database')
+          }
+        }
+      }
+    }
+  })
+  
   return {
     showSearch,
     hideEmptyCategories,
@@ -393,6 +423,7 @@ export function useSettings() {
     randomWallpaper,
     wallpaperApi,
     displayMode,
+    avatarUrl,
     toggleSearch,
     toggleHideEmptyCategories,
     updateCustomTitle,
@@ -402,6 +433,7 @@ export function useSettings() {
     toggleRandomWallpaper,
     updateWallpaperApi,
     setDisplayMode,
+    updateAvatarUrl,
     applyWallpaper,
     removeWallpaper,
     loadSettingsFromDB
