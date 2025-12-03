@@ -6,6 +6,7 @@ const categories = ref([])
 const bookmarks = ref([])
 const searchQuery = ref('')
 const searchCategoryId = ref(null) // 分类过滤
+const searchTags = ref([]) // 标签过滤
 
 export function useBookmarks() {
   const { getAuthHeaders, logout, apiRequest } = useAuth()
@@ -20,13 +21,26 @@ export function useBookmarks() {
       result = result.filter(bookmark => bookmark.category_id === searchCategoryId.value)
     }
     
+    // 标签过滤
+    if (searchTags.value && searchTags.value.length > 0) {
+      result = result.filter(bookmark => {
+        if (!bookmark.tags) return false
+        const bookmarkTags = bookmark.tags.split(',').map(t => t.trim().toLowerCase()).filter(Boolean)
+        return searchTags.value.some(searchTag => 
+          bookmarkTags.includes(searchTag.toLowerCase())
+        )
+      })
+    }
+    
     // 关键词搜索
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
       result = result.filter(bookmark => 
         bookmark.name.toLowerCase().includes(query) ||
         bookmark.url.toLowerCase().includes(query) ||
-        (bookmark.description && bookmark.description.toLowerCase().includes(query))
+        (bookmark.description && bookmark.description.toLowerCase().includes(query)) ||
+        (bookmark.tags && bookmark.tags.toLowerCase().includes(query)) ||
+        (bookmark.notes && bookmark.notes.toLowerCase().includes(query))
       )
     }
     
@@ -41,6 +55,17 @@ export function useBookmarks() {
         .sort((a, b) => a.position - b.position)
     })
     return result
+  })
+  
+  const allTags = computed(() => {
+    const tagsSet = new Set()
+    bookmarks.value.forEach(bookmark => {
+      if (bookmark.tags) {
+        const tags = bookmark.tags.split(',').map(t => t.trim()).filter(Boolean)
+        tags.forEach(tag => tagsSet.add(tag))
+      }
+    })
+    return Array.from(tagsSet).sort()
   })
   
   const fetchData = async () => {
@@ -351,8 +376,10 @@ export function useBookmarks() {
     bookmarks,
     searchQuery,
     searchCategoryId,
+    searchTags,
     filteredBookmarks,
     bookmarksByCategory,
+    allTags,
     fetchData,
     addBookmark,
     updateBookmark,

@@ -1054,7 +1054,8 @@ html.dark .dialog-box {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 0.65rem;
   border: 2px solid var(--border);
@@ -1063,10 +1064,18 @@ html.dark .dialog-box {
   color: var(--text);
   font-size: 0.9rem;
   transition: var(--transition);
+  font-family: inherit;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);

@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   
   try {
-    const { name, url, description, icon, category_id, is_private } = await request.json();
+    const { name, url, description, icon, category_id, is_private, tags, notes } = await request.json();
     
     // 检查 URL 是否已存在
     const existingBookmark = await env.DB.prepare(
@@ -92,8 +92,8 @@ export async function onRequestPost(context) {
     const isPrivate = is_private ? 1 : 0;
     
     const result = await env.DB.prepare(
-      'INSERT INTO bookmarks (name, url, description, icon, category_id, position, is_private) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).bind(name, url, description || null, icon || null, category_id, newPosition, isPrivate).run();
+      'INSERT INTO bookmarks (name, url, description, icon, category_id, position, is_private, tags, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(name, url, description || null, icon || null, category_id, newPosition, isPrivate, tags || '', notes || '').run();
     
     return new Response(JSON.stringify({
       success: true,

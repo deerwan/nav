@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS bookmarks (
   category_id INTEGER NOT NULL,
   position INTEGER NOT NULL DEFAULT 0,
   is_private INTEGER DEFAULT 0,
+  tags TEXT DEFAULT '',
+  notes TEXT DEFAULT '',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
@@ -44,6 +46,9 @@ ON bookmarks(is_private);
 
 CREATE INDEX IF NOT EXISTS idx_bookmarks_url 
 ON bookmarks(url);
+
+CREATE INDEX IF NOT EXISTS idx_bookmarks_tags 
+ON bookmarks(tags);
 
 CREATE INDEX IF NOT EXISTS idx_categories_position 
 ON categories(position);

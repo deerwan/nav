@@ -56,6 +56,24 @@
       <HighlightText :text="bookmark.description || displayUrl" :query="searchQuery" />
     </p>
     
+    <div v-if="bookmark.tags && bookmark.tags.trim()" class="card-tags">
+      <span 
+        v-for="tag in parsedTags" 
+        :key="tag" 
+        class="tag-badge"
+      >
+        {{ tag }}
+      </span>
+    </div>
+    
+    <div v-if="bookmark.notes && bookmark.notes.trim()" class="card-notes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      <span><HighlightText :text="bookmark.notes" :query="searchQuery" /></span>
+    </div>
+    
     <div v-if="bookmark.is_private" class="private-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -188,6 +206,11 @@ const displayUrl = computed(() => {
   } catch {
     return props.bookmark.url
   }
+})
+
+const parsedTags = computed(() => {
+  if (!props.bookmark.tags) return []
+  return props.bookmark.tags.split(',').map(t => t.trim()).filter(Boolean)
 })
 
 const handleIconError = () => {
@@ -339,6 +362,12 @@ const hoverTitle = computed(() => {
   parts.push(`地址：${props.bookmark.url || ''}`)
   if (props.bookmark.description) {
     parts.push(`描述：${props.bookmark.description}`)
+  }
+  if (props.bookmark.tags && props.bookmark.tags.trim()) {
+    parts.push(`标签：${props.bookmark.tags}`)
+  }
+  if (props.bookmark.notes && props.bookmark.notes.trim()) {
+    parts.push(`备注：${props.bookmark.notes}`)
   }
   if (props.bookmark.is_private) {
     parts.push('私密：是')
@@ -495,6 +524,59 @@ const handleKeydown = (event) => {
   background: linear-gradient(135deg, rgba(99, 102, 241, 1) 0%, rgba(139, 92, 246, 1) 100%);
   box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.2);
   transform: scale(1.1);
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.tag-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  color: var(--primary);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  transition: var(--transition);
+}
+
+.tag-badge:hover {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-1px);
+}
+
+.card-notes {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.card-notes svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.card-notes span {
+  flex: 1;
 }
 
 .drag-handle:active {

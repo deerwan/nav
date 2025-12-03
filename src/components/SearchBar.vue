@@ -8,11 +8,11 @@
       <input 
         v-model="query"
         type="text" 
-        placeholder="搜索书签名称、URL或描述..."
+        placeholder="搜索书签名称、URL、描述、标签或备注..."
         @input="handleSearch"
         @focus="showResults = true"
       >
-      <button v-if="query || selectedCategoryId" class="clear-btn" @click="clearSearch" title="清除搜索">
+      <button v-if="query || selectedCategoryId || selectedTags.length > 0" class="clear-btn" @click="clearSearch" title="清除搜索">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
@@ -39,6 +39,24 @@
               {{ cat.displayName }}
             </option>
           </select>
+        </div>
+        
+        <div v-if="allTags.length > 0" class="filter-group">
+          <label>按标签过滤：</label>
+          <div class="tags-filter">
+            <button
+              v-for="tag in allTags"
+              :key="tag"
+              class="tag-filter-btn"
+              :class="{ active: selectedTags.includes(tag) }"
+              @click="toggleTag(tag)"
+            >
+              {{ tag }}
+            </button>
+          </div>
+          <p v-if="selectedTags.length > 0" class="selected-tags-info">
+            已选择 {{ selectedTags.length }} 个标签
+          </p>
         </div>
       </div>
     </Transition>
@@ -85,7 +103,7 @@
       </div>
     </Transition>
     
-    <div v-if="(query || selectedCategoryId) && !showResults" class="search-result-info">
+    <div v-if="(query || selectedCategoryId || selectedTags.length > 0) && !showResults" class="search-result-info">
       <span class="result-count">
         找到 <strong>{{ filteredBookmarks.length }}</strong> 个书签
       </span>
@@ -129,10 +147,11 @@ import { debounce } from '../utils/helpers'
 
 const emit = defineEmits(['scrollToBookmark'])
 
-const { searchQuery, searchCategoryId, categories, filteredBookmarks, bookmarks } = useBookmarks()
+const { searchQuery, searchCategoryId, searchTags, categories, filteredBookmarks, bookmarks, allTags } = useBookmarks()
 const { getAvailableEngines, openSearchEngine, enabledSearchEnginesPanel } = useSearchEngines()
 const query = ref('')
 const selectedCategoryId = ref(null)
+const selectedTags = ref([])
 const showFilter = ref(false)
 const showResults = ref(false)
 const showEngines = ref(false)
@@ -203,11 +222,23 @@ const handleCategoryFilter = () => {
   searchCategoryId.value = selectedCategoryId.value
 }
 
+const toggleTag = (tag) => {
+  const index = selectedTags.value.indexOf(tag)
+  if (index > -1) {
+    selectedTags.value.splice(index, 1)
+  } else {
+    selectedTags.value.push(tag)
+  }
+  searchTags.value = [...selectedTags.value]
+}
+
 const clearSearch = () => {
   query.value = ''
   selectedCategoryId.value = null
+  selectedTags.value = []
   searchQuery.value = ''
   searchCategoryId.value = null
+  searchTags.value = []
   showResults.value = false
   showEngines.value = false
 }
@@ -372,6 +403,14 @@ html.dark .filter-panel {
   gap: 0.5rem;
 }
 
+.filter-group {
+  margin-top: 1rem;
+}
+
+.filter-group:first-child {
+  margin-top: 0;
+}
+
 .filter-group label {
   font-size: 0.875rem;
   font-weight: 500;
@@ -392,6 +431,46 @@ html.dark .filter-panel {
 .filter-group select:focus {
   outline: none;
   border-color: var(--primary);
+}
+
+.tags-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag-filter-btn {
+  padding: 0.4rem 0.75rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.tag-filter-btn:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.tag-filter-btn.active {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.selected-tags-info {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 /* 搜索结果面板 */

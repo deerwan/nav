@@ -4,7 +4,7 @@ export async function onRequestPut(context) {
   const id = params.id;
   
   try {
-    const { name, url, description, icon, category_id, is_private } = await request.json();
+    const { name, url, description, icon, category_id, is_private, tags, notes } = await request.json();
     const isPrivate = is_private ? 1 : 0;
     
     // 检查 URL 是否被其他书签使用（排除当前书签）
@@ -35,8 +35,8 @@ export async function onRequestPut(context) {
     }
     
     await env.DB.prepare(
-      'UPDATE bookmarks SET name = ?, url = ?, description = ?, icon = ?, category_id = ?, is_private = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
-    ).bind(name, url, description || null, icon || null, category_id, isPrivate, id).run();
+      'UPDATE bookmarks SET name = ?, url = ?, description = ?, icon = ?, category_id = ?, is_private = ?, tags = ?, notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
+    ).bind(name, url, description || null, icon || null, category_id, isPrivate, tags || '', notes || '', id).run();
     
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

@@ -87,6 +87,17 @@
             <p v-if="aiSuggestion" class="ai-suggestion">{{ aiSuggestion }}</p>
           </div>
           
+          <div class="form-group">
+            <label>标签</label>
+            <input v-model="form.tags" type="text" placeholder="用逗号分隔多个标签，例如：工作,学习,开发">
+            <p class="field-hint">💡 可以添加多个标签，用逗号分隔</p>
+          </div>
+          
+          <div class="form-group">
+            <label>备注</label>
+            <textarea v-model="form.notes" rows="3" placeholder="添加备注信息（可选）"></textarea>
+          </div>
+          
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
               <input v-model="form.is_private" type="checkbox">
@@ -141,7 +152,9 @@ const form = ref({
   description: '',
   icon: '',
   category_id: '',
-  is_private: false
+  is_private: false,
+  tags: '',
+  notes: ''
 })
 
 const categoryOptions = computed(() => {
@@ -165,7 +178,9 @@ const open = (bookmark = null, options = {}) => {
       description: bookmark.description || '',
       icon: bookmark.icon || '',
       category_id: bookmark.category_id,
-      is_private: !!bookmark.is_private
+      is_private: !!bookmark.is_private,
+      tags: bookmark.tags || '',
+      notes: bookmark.notes || ''
     }
   } else {
     isEdit.value = false
@@ -177,7 +192,9 @@ const open = (bookmark = null, options = {}) => {
       description: '',
       icon: '',
       category_id: presetCategoryId,
-      is_private: false
+      is_private: false,
+      tags: '',
+      notes: ''
     }
   }
   
@@ -491,6 +508,13 @@ defineExpose({
   color: var(--text-secondary);
   margin-top: 0.2rem;
   margin-left: 24px;
+}
+
+.field-hint {
+  margin: 0.4rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 /* Mobile optimization */
