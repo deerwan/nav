@@ -84,45 +84,6 @@
         }}
       </div>
     </div>
-
-    <!-- 主题风格 -->
-    <div class="form-group">
-      <label class="form-label">主题风格</label>
-      <div class="form-row">
-        <select 
-          class="form-select"
-          :value="themeStyle"
-          @change="$emit('setThemeStyle', $event.target.value)"
-        >
-          <option value="default">✨ 默认风格</option>
-          <option value="ios26">🚀 iOS 26 风格</option>
-        </select>
-      </div>
-      <div class="form-hint">
-        选择不同的界面视觉风格
-      </div>
-    </div>
-    
-    <!-- 显示模式 -->
-    <div class="form-group">
-      <label class="form-label">显示模式</label>
-      <div class="form-row">
-        <select 
-          class="form-select"
-          :value="displayMode"
-          @change="handleDisplayModeChange"
-        >
-          <option value="standard">📋 标准模式</option>
-          <option value="efficient">⚡ 高效模式</option>
-        </select>
-      </div>
-      <div class="form-hint">
-        {{ 
-          displayMode === 'standard' ? '标准大小的书签卡片' : 
-          '紧凑布局，单页显示更多内容'
-        }}
-      </div>
-    </div>
     
     <!-- 显示搜索栏 -->
     <div class="form-group">
@@ -315,10 +276,6 @@ import { useSearchEngines } from '../../composables/useSearchEngines'
 
 const props = defineProps({
   themeMode: String,
-  themeStyle: {
-    type: String,
-    default: 'default'
-  },
   isDark: Boolean,
   showSearch: Boolean,
   hideEmptyCategories: Boolean,
@@ -331,8 +288,7 @@ const props = defineProps({
   },
   footerContent: String,
   randomWallpaper: Boolean,
-  wallpaperApi: String,
-  displayMode: String
+  wallpaperApi: String
 })
 
 const emit = defineEmits([
@@ -340,13 +296,11 @@ const emit = defineEmits([
   'editFooter', 
   'uploadAvatar',
   'setThemeMode', 
-  'setThemeStyle',
   'toggleSearch', 
   'toggleHideEmpty', 
   'togglePublicMode',
   'toggleRandomWallpaper',
-  'updateWallpaperApi',
-  'setDisplayMode'
+  'updateWallpaperApi'
 ])
 
 const { SEARCH_ENGINES, enabledEngines, enabledSearchEnginesPanel, toggleEngine, toggleSearchEnginesPanel } = useSearchEngines()
@@ -389,10 +343,6 @@ const handleAvatarChange = (event) => {
 
 const handleThemeChange = (event) => {
   emit('setThemeMode', event.target.value)
-}
-
-const handleDisplayModeChange = (event) => {
-  emit('setDisplayMode', event.target.value)
 }
 
 const handleConfirm = () => {

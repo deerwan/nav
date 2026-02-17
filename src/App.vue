@@ -1,7 +1,7 @@
 <template>
-  <div class="app" :class="{ 'efficient-mode': displayMode === 'efficient' }">
+  <div class="app efficient-mode">
     <!-- Header -->
-    <header class="app-header" :class="{ 'efficient-mode': displayMode === 'efficient' }">
+    <header class="app-header efficient-mode">
       <div class="header-content">
          <!-- 左上角：汉堡菜单按钮 -->
          <div class="header-left">
@@ -118,7 +118,7 @@
         </button>
       </div>
       
-      <div v-else class="main-layout" :class="{ 'efficient-mode': displayMode === 'efficient' }">
+      <div v-else class="main-layout efficient-mode">
         <!-- Sidebar Backdrop -->
         <div 
           v-if="sidebarOpen" 
@@ -149,12 +149,11 @@
          />
         
         <!-- Bookmarks Content -->
-        <div class="bookmarks-area" :class="{ 'efficient-mode': displayMode === 'efficient' }">
+        <div class="bookmarks-area efficient-mode">
           <!-- Breadcrumbs -->
           <div 
             v-if="selectedCategoryId !== ALL_CATEGORIES_ID && !searchQuery" 
-            class="breadcrumbs-container"
-            :class="{ 'efficient-mode': displayMode === 'efficient' }"
+            class="breadcrumbs-container efficient-mode"
           >
             <button 
               class="breadcrumb-item root-item"
@@ -193,7 +192,7 @@
               :is-batch-mode="isBatchMode"
               :selected-ids="selectedIds"
               :selected-category-ids="selectedCategoryIds"
-              :display-mode="displayMode"
+
               @select-category="handleSelectCategory"
               @edit-category="handleEditCategory"
               @delete-category="handleDeleteCategory"
@@ -254,7 +253,7 @@
       :show-search="showSearch"
       :random-wallpaper="randomWallpaper"
       :wallpaper-api="wallpaperApi"
-      :display-mode="displayMode"
+
       :hide-empty-categories="hideEmptyCategories"
       :public-mode="publicMode"
       :custom-title="customTitle"
@@ -265,13 +264,11 @@
       :empty-category-count="emptyCategoryCount"
       @action="handleSettingsAction"
       @set-theme-mode="setThemeMode"
-      @set-theme-style="setThemeStyle"
       @toggle-search="toggleSearch"
       @toggle-hide-empty="toggleHideEmptyCategories"
       @toggle-public-mode="togglePublicMode"
       @toggle-random-wallpaper="toggleRandomWallpaper"
       @update-wallpaper-api="updateWallpaperApi"
-      @set-display-mode="setDisplayMode"
       @update-title="updateCustomTitle"
       @update-footer="updateFooterContent"
       @editTitle="handleEditTitle"
@@ -341,8 +338,8 @@ const {
   getEmptyCategories,
   cleanupEmptyCategories
 } = useBookmarks()
-const { themeMode, themeStyle, isDark, setThemeMode, setThemeStyle, toggleTheme, loadThemeFromDB } = useTheme()
-const { showSearch, hideEmptyCategories, customTitle, footerContent, activeSettingsTab, publicMode, randomWallpaper, wallpaperApi, displayMode, avatarUrl, toggleSearch, toggleHideEmptyCategories, togglePublicMode, updateCustomTitle, updateFooterContent, setActiveSettingsTab, toggleRandomWallpaper, updateWallpaperApi, setDisplayMode, updateAvatarUrl, applyWallpaper, loadSettingsFromDB } = useSettings()
+const { themeMode, isDark, setThemeMode, toggleTheme, loadThemeFromDB } = useTheme()
+const { showSearch, hideEmptyCategories, customTitle, footerContent, activeSettingsTab, publicMode, randomWallpaper, wallpaperApi, avatarUrl, toggleSearch, toggleHideEmptyCategories, togglePublicMode, updateCustomTitle, updateFooterContent, setActiveSettingsTab, toggleRandomWallpaper, updateWallpaperApi, updateAvatarUrl, applyWallpaper, loadSettingsFromDB } = useSettings()
 const { setToastInstance, success: toastSuccess, error: toastError } = useToast()
 const {
   isBatchMode,

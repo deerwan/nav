@@ -9,7 +9,7 @@
       'batch-mode': isBatchMode,
       'drop-before': isDragOver && dropPosition === 'before',
       'drop-after': isDragOver && dropPosition === 'after',
-      'efficient-mode': displayMode === 'efficient'
+      'efficient-mode': true
     }"
     :draggable="isEditMode && !isBatchMode"
     :title="hoverTitle"
@@ -131,10 +131,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  displayMode: {
-    type: String,
-    default: 'standard'
-  }
+
 })
 
 const emit = defineEmits([

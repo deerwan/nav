@@ -1,8 +1,7 @@
 <template>
   <div 
     :id="`category-${category.id}`" 
-    class="category-section"
-    :class="{ 'efficient-mode': displayMode === 'efficient' }"
+    class="category-section efficient-mode"
   >
     <div class="category-header">
       <div v-if="isBatchMode" class="category-checkbox">
@@ -42,8 +41,7 @@
       <div 
         v-for="sub in category.children" 
         :key="sub.id"
-        class="folder-card"
-        :class="{ 'efficient-mode': displayMode === 'efficient' }"
+        class="folder-card efficient-mode"
         @click="$emit('select-category', sub.id)"
       >
         <div class="folder-icon">
@@ -60,10 +58,9 @@
 
     <div 
       ref="gridRef"
-      class="bookmarks-grid"
+      class="bookmarks-grid efficient-mode"
       :class="{ 
-        'is-drag-over': isGridDragOver,
-        'efficient-mode': displayMode === 'efficient'
+        'is-drag-over': isGridDragOver
       }"
       @dragover.prevent="handleGridDragOver"
       @dragenter.prevent="handleGridDragEnter"
@@ -74,8 +71,7 @@
         <!-- 占位符：显示在拖拽插入位置之前 -->
         <div
           v-if="showPlaceholder && placeholderIndex === index && placeholderPosition === 'before' && currentDraggedId !== bookmark.id"
-          class="drag-placeholder"
-          :class="{ 'efficient-mode': displayMode === 'efficient' }"
+          class="drag-placeholder efficient-mode"
         />
         
         <BookmarkCard
@@ -83,7 +79,7 @@
           :is-edit-mode="isEditMode"
           :is-batch-mode="isBatchMode"
           :is-selected="isBookmarkSelected(bookmark.id)"
-          :display-mode="displayMode"
+
           @edit="$emit('edit-bookmark', bookmark)"
           @delete="$emit('delete-bookmark', bookmark)"
           @dragstart="handleDragStart"
@@ -99,16 +95,14 @@
         <!-- 占位符：显示在拖拽插入位置之后 -->
         <div
           v-if="showPlaceholder && placeholderIndex === index && placeholderPosition === 'after' && currentDraggedId !== bookmark.id"
-          class="drag-placeholder"
-          :class="{ 'efficient-mode': displayMode === 'efficient' }"
+          class="drag-placeholder efficient-mode"
         />
       </template>
       
       <!-- 占位符：显示在列表末尾 -->
       <div
         v-if="showPlaceholder && placeholderIndex >= bookmarks.length"
-        class="drag-placeholder"
-        :class="{ 'efficient-mode': displayMode === 'efficient' }"
+        class="drag-placeholder efficient-mode"
       />
       
       <div v-if="!bookmarks.length" class="empty-state">
@@ -147,10 +141,7 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  displayMode: {
-    type: String,
-    default: 'standard'
-  }
+
 })
 
 const emit = defineEmits([
