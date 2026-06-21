@@ -7,31 +7,59 @@ export async function onRequestPut(context) {
     const { name, url, description, icon, category_id, is_private, tags, notes } = await request.json();
     const isPrivate = is_private ? 1 : 0;
     
-    // 检查 URL 是否被其他书签使用（排除当前书签）
-    const existingBookmark = await env.DB.prepare(
-      `SELECT b.id, b.name, b.url, b.category_id, c.name as category_name 
-       FROM bookmarks b 
-       LEFT JOIN categories c ON b.category_id = c.id 
-       WHERE b.url = ? AND b.id != ? 
-       LIMIT 1`
-    ).bind(url.trim(), id).first();
-    
-    if (existingBookmark) {
-      return new Response(JSON.stringify({
-        success: false,
-        duplicate: true,
-        error: '该 URL 已被其他书签使用',
-        existingBookmark: {
-          id: existingBookmark.id,
-          name: existingBookmark.name,
-          url: existingBookmark.url,
-          category_id: existingBookmark.category_id,
-          category_name: existingBookmark.category_name
+    // 验证 URL 格式和协议
+    if (url !== undefined) {
+      if (typeof url !== 'string' || !url.trim()) {
+        return new Response(JSON.stringify({ error: 'URL 必须是非空字符串' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      
+      const trimmedUrl = url.trim();
+      try {
+        const parsedUrl = new URL(trimmedUrl);
+        if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+          return new Response(JSON.stringify({ error: '只支持 http 和 https 协议的链接' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
         }
-      }), {
-        status: 409,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: 'URL 格式无效' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    }
+    
+    // 仅在 URL 被修改时检查是否重复
+    if (url !== undefined) {
+      const existingBookmark = await env.DB.prepare(
+        `SELECT b.id, b.name, b.url, b.category_id, c.name as category_name 
+         FROM bookmarks b 
+         LEFT JOIN categories c ON b.category_id = c.id 
+         WHERE b.url = ? AND b.id != ? 
+         LIMIT 1`
+      ).bind(url.trim(), id).first();
+      
+      if (existingBookmark) {
+        return new Response(JSON.stringify({
+          success: false,
+          duplicate: true,
+          error: '该 URL 已被其他书签使用',
+          existingBookmark: {
+            id: existingBookmark.id,
+            name: existingBookmark.name,
+            url: existingBookmark.url,
+            category_id: existingBookmark.category_id,
+            category_name: existingBookmark.category_name
+          }
+        }), {
+          status: 409,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
     }
     
     await env.DB.prepare(

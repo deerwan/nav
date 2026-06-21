@@ -55,6 +55,13 @@ Vue 3 + Vite + Cloudflare Pages Functions + D1 + R2
 - 添加绑定：变量名 `BACKUP_BUCKET`，选择 `bookmark-backups`
 - 重试部署
 
+**配置 KV 速率限制**（可选，用于登录安全防护）：
+- `Workers & Pages` > `KV` > `Create namespace`，名称随意
+- Pages 项目 > `Settings` > `Functions` > `KV namespace bindings`
+- 添加绑定：变量名 `RATE_LIMIT_STORAGE`，选择创建的 KV 命名空间
+- 重试部署
+- 配置后，同一用户名 1 分钟内最多只能尝试 5 次登录，防止暴力破解
+
 > **提示**：所有配置通过 Dashboard 完成，无需修改代码。`wrangler.toml` 仅用于本地开发（已添加到 `.gitignore`）。
 
 **本地开发**：

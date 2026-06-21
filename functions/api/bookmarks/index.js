@@ -56,6 +56,31 @@ export async function onRequestPost(context) {
   try {
     const { name, url, description, icon, category_id, is_private, tags, notes } = await request.json();
     
+    // 验证 URL 格式和协议
+    if (!url || typeof url !== 'string') {
+      return new Response(JSON.stringify({ error: 'URL 不能为空' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const trimmedUrl = url.trim();
+    try {
+      const parsedUrl = new URL(trimmedUrl);
+      // 只允许 http 和 https 协议
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        return new Response(JSON.stringify({ error: '只支持 http 和 https 协议的链接' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+    } catch (e) {
+      return new Response(JSON.stringify({ error: 'URL 格式无效' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     // 检查 URL 是否已存在
     const existingBookmark = await env.DB.prepare(
       `SELECT b.id, b.name, b.url, b.category_id, c.name as category_name 

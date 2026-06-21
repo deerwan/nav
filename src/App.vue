@@ -35,7 +35,7 @@
            :avatar-url="avatarUrl"
            :username="authUsername"
            :is-edit-mode="isEditMode"
-           @settings="settingsPage.open()"
+           @settings="navigateToSettings()"
            @edit="isEditMode = true"
            @logout="handleLogout()"
           />
@@ -106,7 +106,7 @@
         <button 
           v-if="isAuthenticated" 
           class="btn btn-primary" 
-          @click="settingsPage.open(); setActiveSettingsTab('data')" 
+          @click="navigateToSettings('data')" 
           style="margin-top: 1.5rem;"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width: 18px; height: 18px;">
@@ -262,6 +262,7 @@
       :footer-content="footerContent"
       :active-settings-tab="activeSettingsTab"
       :empty-category-count="emptyCategoryCount"
+      @close="navigateFromSettings"
       @action="handleSettingsAction"
       @set-theme-mode="setThemeMode"
       @toggle-search="toggleSearch"
@@ -282,11 +283,15 @@
     
     <!-- Toast Notifications -->
     <ToastNotification ref="toast" />
+
+    <!-- Hidden router-view for vue-router -->
+    <router-view v-show="false" />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from './composables/useAuth'
 import { useBookmarks } from './composables/useBookmarks'
 import { useBatchOperations } from './composables/useBatchOperations'
@@ -318,6 +323,25 @@ import AvatarMenu from './components/AvatarMenu.vue'
 import { useAI } from './composables/useAI'
 
 const { isAuthenticated, username: authUsername, logout, onAuthChange } = useAuth()
+
+const route = useRoute()
+const router = useRouter()
+
+// 路由状态
+const isSettingsRoute = computed(() => route.name === 'settings')
+
+const navigateToSettings = (tab) => {
+  if (tab) setActiveSettingsTab(tab)
+  router.push({ name: 'settings', query: tab ? { tab } : {} })
+}
+
+const navigateFromSettings = () => {
+  const query = {}
+  if (selectedCategoryId.value !== ALL_CATEGORIES_ID) {
+    query.category = selectedCategoryId.value
+  }
+  router.push({ name: 'home', query })
+}
 const { aiEnabled, checkAIAvailability } = useAI()
 const { loadSettingsFromDB: loadSearchEnginesSettings } = useSearchEngines()
 const {
@@ -378,6 +402,31 @@ const ALL_CATEGORIES_ID = 'all'
 const SCROLL_OFFSET = 140
 const PROGRAMMATIC_SCROLL_TIMEOUT = 600
 let scrollResetTimer = null
+
+// 从 URL 读取分类参数
+watch(() => route.query.category, (catId) => {
+  if (catId && categories.value.some(c => String(c.id) === String(catId))) {
+    const id = Number(catId)
+    if (selectedCategoryId.value !== id) {
+      selectedCategoryId.value = id
+    }
+  } else if (!catId && selectedCategoryId.value !== ALL_CATEGORIES_ID) {
+    selectedCategoryId.value = ALL_CATEGORIES_ID
+  }
+}, { immediate: true })
+
+// 监听设置页路由变化
+watch(() => route.name, (name) => {
+  if (name === 'settings') {
+    settingsPage.value?.open()
+    // 从 query 中读取 tab
+    if (route.query.tab) {
+      setActiveSettingsTab(route.query.tab)
+    }
+  } else {
+    settingsPage.value?.close()
+  }
+}, { immediate: true })
 
 const isDesktop = ref(typeof window !== 'undefined' ? window.innerWidth >= 1025 : true)
 const sidebarOpen = ref(false)
@@ -541,6 +590,12 @@ const handleSelectCategory = (categoryId) => {
   selectedCategoryId.value = categoryId
   sidebarOpen.value = false
   scrollToTop()
+  // 同步分类选择到 URL query 参数
+  const query = {}
+  if (categoryId !== ALL_CATEGORIES_ID) {
+    query.category = categoryId
+  }
+  router.replace({ name: route.name || 'home', query })
 }
 
 const handleScrollToBookmark = (bookmark) => {
@@ -595,6 +650,10 @@ const handleResize = () => {
 
 const handleSettingsTabChange = (tab) => {
   setActiveSettingsTab(tab)
+  // 同步 tab 到 URL query
+  if (route.name === 'settings') {
+    router.replace({ name: 'settings', query: { tab } })
+  }
   // 切换到数据管理标签时检查空分类
   if (tab === 'data' && isAuthenticated.value) {
     checkEmptyCategories()
@@ -715,14 +774,14 @@ const handleSettingsAction = (action) => {
       break
     case 'addBookmark':
       // 其他操作需要关闭设置页面
-      settingsPage.value.close()
+      navigateFromSettings()
       setTimeout(() => {
         bookmarkDialog.value.open()
       }, 300)
       break
     case 'addCategory':
       // 其他操作需要关闭设置页面
-      settingsPage.value.close()
+      navigateFromSettings()
       setTimeout(() => {
         handleAddCategory()
       }, 300)

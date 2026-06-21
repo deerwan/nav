@@ -1,5 +1,5 @@
 # ⚠️ 重要说明：此文件仅用于开发环境
-# 
+#
 name = "bookmark-manager"
 compatibility_date = "2024-01-01"
 pages_build_output_dir = "dist"
@@ -15,6 +15,14 @@ database_id = "YOUR_DATABASE_ID_HERE"  # 替换为你的 D1 数据库 ID
 #[[r2_buckets]]
 #binding = "BACKUP_BUCKET"
 #bucket_name = "bookmark-backups"
+#
+# KV 命名空间配置（用于登录速率限制，强烈建议）
+# 在 Cloudflare Dashboard > Workers & Pages > KV 中创建命名空间
+# 然后在 Pages 项目的 Settings > Functions > KV namespace bindings 中添加绑定
+# 变量名填 RATE_LIMIT_STORAGE，选择创建的 KV 命名空间
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_STORAGE"
+# id = "YOUR_KV_NAMESPACE_ID"
 #
 # 环境变量（必须）
 # - ADMIN_USERNAME          # 管理员用户名，用于登录管理后台
